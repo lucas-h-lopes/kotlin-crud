@@ -49,7 +49,18 @@ fun main() {
                 scanner.nextLine()
 
                 val user: User = userDao.getById(id)
-                println(user)
+                println("\n$user")
+            }
+
+            "3" -> {
+                val result: List<User> = userDao.getAll()
+                println("**** Usuários Cadastrados ****")
+                for((index, value) in result.withIndex()){
+                    println("$value")
+                    if(index != result.size-1){
+                        println()
+                    }
+                }
             }
         }
     } catch (e: Exception) {
@@ -57,6 +68,7 @@ fun main() {
         println("\nUm erro ocorreu durante a operação: ${e.message}")
     } finally {
         connection.autoCommit = true
+        Database.closeConnection(connection)
     }
 
 }

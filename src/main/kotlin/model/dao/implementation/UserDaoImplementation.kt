@@ -1,18 +1,16 @@
 package model.dao.implementation
 
-import db.Database
 import db.exception.DatabaseException
+import exception.EntityNotFoundException
+import exception.UniqueEmailViolationException
 import model.User
 import model.dao.UserDao
-import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.ResultSet
-import java.sql.SQLException
+import java.sql.*
 
-class UserDaoImplementation(val connection: Connection) : UserDao {
+class UserDaoImplementation(private val connection: Connection) : UserDao {
     override fun insert(user: User): User {
         try {
-            val preparedStatement: PreparedStatement = Database.getConnection()
+            val preparedStatement: PreparedStatement = connection
                 .prepareStatement(
                     "insert into usuarios (nome, email) values (?,?)",
                     PreparedStatement.RETURN_GENERATED_KEYS
@@ -21,28 +19,60 @@ class UserDaoImplementation(val connection: Connection) : UserDao {
             preparedStatement.setString(2, user.getEmail())
 
             preparedStatement.executeUpdate()
-            val resultSet: ResultSet = preparedStatement.generatedKeys
-
-            if (resultSet.next()) {
-                user.setId(resultSet.getInt(1))
-                return user
+            preparedStatement.generatedKeys.use { result ->
+                if (result.next()) {
+                    user.setId(result.getInt(1))
+                    return user
+                }
+                throw DatabaseException("Falha ao inserir usuário, resultSet sem valor")
             }
-            throw DatabaseException("Falha ao inserir usuário, resultSet sem valor")
         } catch (e: SQLException) {
-            throw DatabaseException("Falha ao inserir usuário: " + e.message)
+            throw UniqueEmailViolationException("Falha ao inserir usuário -> " + e.message)
         }
     }
 
     override fun getById(id: Int): User {
-        TODO("Not yet implemented")
+        val statement: PreparedStatement = connection.prepareStatement("select * from usuarios where id = ?")
+        statement.setInt(1, id)
+        statement.executeQuery().use { result ->
+            return if (result.next()) {
+                val id = result.getInt("id")
+                val nome = result.getString("nome")
+                val email = result.getString("email")
+                User(id, nome, email)
+            } else {
+                throw EntityNotFoundException("Usuário com id '$id' não foi encontrado")
+            }
+        }
     }
 
     override fun getAll(): List<User> {
-        TODO("Not yet implemented")
+        val statement: Statement = connection.createStatement()
+        val result: ResultSet = statement.executeQuery("select * from usuarios")
+        val list: MutableList<User> = ArrayList()
+
+        while (result.next()) {
+            var user: User = User(result.getInt("id"), result.getString("nome"), result.getString("email"))
+            list.add(user)
+        }
+        return list
     }
 
     override fun update(id: Int, user: User): String {
-        TODO("Not yet implemented")
+        /*val userDb: User = getById(id)
+
+        val preparedStatement: PreparedStatement =
+            connection.prepareStatement("update usuarios set nome = ?, email = ? where id = ?")
+        preparedStatement.setString(1, user.getNome())
+        preparedStatement.setString(2, user.getEmail())
+        preparedStatement.setInt(3, id)
+
+        val rows: Int = preparedStatement.executeUpdate()
+
+        if (rows > 0) {
+            return "Atualizado com sucesso"
+        }*/
+        TODO()
     }
 
     override fun deleteById(id: Int): String {
