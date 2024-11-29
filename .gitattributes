@@ -1,0 +1,6 @@
+*.kt linguist-detectable=true
+*.java linguist-detectable=false
+
+*.jar linguist-vendored
+*.class linguist-vendored
+
