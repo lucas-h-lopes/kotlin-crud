@@ -7,7 +7,12 @@ data class User(
     private var id: Int,
     private var nome: String,
     private var email: String
+
 ) {
+    init {
+        setNome(nome)
+        setEmail(email)
+    }
 
     constructor(nome: String, email: String) : this(0, nome, email)
 
@@ -35,7 +40,7 @@ data class User(
     }
 
     override fun toString(): String {
-        return "${getId()}, ${getNome()}, ${getEmail()}"
+        return "id: $id\nname: $nome\nemail: $email"
     }
 
     fun setEmail(email: String) {
@@ -46,6 +51,6 @@ data class User(
         if (!ValidationUtils.isEmailValid(email)) {
             throw InvalidUserException("O email deve possuir um email válido, p.ex.: exemplo.usuario@dominio.com")
         }
-        this.email = email
+            this.email = email
     }
 }
