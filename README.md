@@ -48,6 +48,7 @@ Visualização inicial:
 ![inicio](/images/preview.png)
 
 Inserção de registros:
+
 ![insert-user](/images/insert.png)
 
 ![insert-phone](/images/insert-phone.png)
