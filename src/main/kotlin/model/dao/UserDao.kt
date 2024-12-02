@@ -8,5 +8,5 @@ interface UserDao {
     fun getById(id: Int): User
     fun getAll(): List<User>
     fun update(id: Int, user: User): String
-    fun deleteById(id: Int): String
+    fun deleteById(id: Int) : Boolean
 }

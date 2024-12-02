@@ -59,8 +59,6 @@ class UserDaoImplementation(private val connection: Connection) : UserDao {
     }
 
     override fun update(id: Int, user: User): String {
-        /*val userDb: User = getById(id)
-
         val preparedStatement: PreparedStatement =
             connection.prepareStatement("update usuarios set nome = ?, email = ? where id = ?")
         preparedStatement.setString(1, user.getNome())
@@ -68,14 +66,25 @@ class UserDaoImplementation(private val connection: Connection) : UserDao {
         preparedStatement.setInt(3, id)
 
         val rows: Int = preparedStatement.executeUpdate()
-
         if (rows > 0) {
             return "Atualizado com sucesso"
-        }*/
-        TODO()
+        }
+        throw DatabaseException("Falha ao atualizar o usuário: $user")
     }
 
-    override fun deleteById(id: Int): String {
-        TODO("Not yet implemented")
+    override fun deleteById(id: Int) : Boolean{
+        getById(id)
+        try {
+            val preparedStatement: PreparedStatement =
+                connection.prepareStatement("delete from usuarios where id = ?")
+
+            preparedStatement.setInt(1, id)
+
+            val rows: Int = preparedStatement.executeUpdate()
+            return true
+        } catch (e: SQLIntegrityConstraintViolationException) {
+            println("Falha ao excluir o usuário com id '$id'. Não é possível excluir um usuário com telefone associado")
+        }
+        return false
     }
 }

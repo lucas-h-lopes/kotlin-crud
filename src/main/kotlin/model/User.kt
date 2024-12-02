@@ -3,7 +3,7 @@ package model
 import exception.InvalidUserException
 import util.ValidationUtils
 
-data class User(
+class User(
     private var id: Int,
     private var nome: String,
     private var email: String
@@ -15,6 +15,7 @@ data class User(
     }
 
     constructor(nome: String, email: String) : this(0, nome, email)
+    constructor() : this (0, "", "")
 
     fun getId(): Int {
         return this.id
@@ -53,4 +54,26 @@ data class User(
         }
             this.email = email
     }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + nome.hashCode()
+        result = 31 * result + email.hashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as User
+
+        if (id != other.id) return false
+        if (nome != other.nome) return false
+        if (email != other.email) return false
+
+        return true
+    }
+
+
 }

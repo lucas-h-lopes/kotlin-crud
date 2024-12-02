@@ -7,5 +7,6 @@ interface PhoneDao {
     fun getById(id: Int): Phone
     fun getAll(): List<Phone>
     fun updatePhone(id : Int, phone : Phone): String
-    fun deleteById(id: Int): String
+    fun deleteById(id: Int): Boolean
+    fun getByUserId(userId: Int) : List<Phone>
 }

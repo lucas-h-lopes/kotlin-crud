@@ -11,7 +11,7 @@ data class Phone(private var id: Int, private var ddd: String, private var numbe
     }
 
     constructor(ddd: String, number: String, user: User) : this(0, ddd, number, user)
-
+    constructor() : this(0, "", "", User())
     fun setId(id : Int){
         this.id = id;
     }
